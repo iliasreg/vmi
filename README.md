@@ -1,0 +1,2 @@
+# vmi
+A nice VM
