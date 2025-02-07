@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define FILE_EXTENSION ".asi"
+
 InstructionMap instMap[]= {
     {"PSH", PSH},
     {"ADD", ADD},
@@ -13,6 +15,22 @@ InstructionMap instMap[]= {
     {"POP", POP},
     {NULL, 0}
 };
+
+bool verifyFile(char* file){
+    if(strcmp(file, "") == 0){
+        return false;
+    }
+    
+    char ext[5];
+    int fileSize = (int) strlen(file);
+    for(int i = fileSize - 4, j=0; i < fileSize; i++, j++){
+        ext[j] = file[i];
+    }
+    if(strcmp(ext, FILE_EXTENSION) == 0){
+        return true;
+    }
+    return false;
+}
 
 int getOpcode(const char* name){
     for(int i = 0; instMap[i].name; i++){

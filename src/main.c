@@ -1,23 +1,32 @@
 #include "vm.h"
 #include "file_lexer.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
-int main(void){
+int main(int argc, char** argv){
 
-	/* Main Loop */
+	
+	/* Reading files through arguments */
+	if(argc != 2){
+		printf("USAGE: ./vm [FILE]\n");
+		return 1;
+	}
+	if(verifyFile(argv[1]) == false){
+		fprintf(stderr, "Invalid file extension !\n");
+	}	
+	
+	const char* fileName = argv[1]; 
 	int progSize;
-	//TODO: make it read files through arguments
-	int *prog = readProgam("test.asi", &progSize);
+	int *prog = readProgam(fileName, &progSize);
 	if(!prog){
 		return 1;
 	}
-
+	
 	/* VM Initialization */
 	registers[IP] = 0; 	// Instruction Pointer
 	registers[SP] = -1; 	// Stack Pointer
-
-
+	
 	/* Main Loop */
 	while(loop){
 		int inst = fetch(prog);
