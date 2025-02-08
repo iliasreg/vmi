@@ -1,0 +1,24 @@
+# Ignore compiled binaries
+*.o
+
+# Ignore test files
+*.asi
+
+# Ignore build 
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore log files
+*.log
+
+# Ignore dependency directories
+deps/
+vendor/
+
+# Ignore temporary files
+*.tmp
+*.temp
