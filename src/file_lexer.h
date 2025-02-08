@@ -11,6 +11,7 @@ typedef struct {
 
 int *readProgam(const char* filename, int* progSize);
 int getOpcode(const char* name);
+int getRegistercode(const char* name);
 bool checkStringToNum(char* str);
 char* removeChars(char *str, const char *chars_to_remove);
 bool verifyFile(char* file);

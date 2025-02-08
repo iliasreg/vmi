@@ -10,9 +10,25 @@
 InstructionMap instMap[]= {
     {"PSH", PSH},
     {"ADD", ADD},
+    {"SUB", SUB},
+    {"MUL", MUL},
+    {"DIV", DIV},
     {"SET", SET},
     {"HLT", HLT},
+    {"LWD", LWD},
     {"POP", POP},
+    {NULL, 0}
+};
+
+InstructionMap registerMap[]= {
+    {"A", A},
+    {"B", B},
+    {"C", C},
+    {"D", D},
+    {"E", E},
+    {"F", F},
+    {"IP", IP},
+    {"SP", SP},
     {NULL, 0}
 };
 
@@ -40,12 +56,19 @@ int getOpcode(const char* name){
     }
     return -1;
 }
-bool checkStringToNum(char* str){
-    return (strcmp(str, "0") || atoi(str) != 0) ? true : false;
+
+int getRegistercode(const char* name){
+    for(int i = 0; registerMap[i].name; i++){
+        if(strcmp(name, registerMap[i].name) == 0){
+            return registerMap[i].opcode;
+        }
+    }
+    return -1;
 }
+
 char* removeChars(char *str, const char *chars_to_remove) {
     if (!str || !chars_to_remove) return str; // Check for NULL pointers
-
+    
     int i = 0, j = 0;
     while (str[i]) {
         // Check if the current character is in the list of characters to remove
@@ -57,6 +80,11 @@ char* removeChars(char *str, const char *chars_to_remove) {
     str[j] = '\0'; // Null-terminate the modified string
     return str;
 }
+
+bool checkStringToNum(char* str){
+    return (strcmp(str, "0") == 0 || atoi(str) != 0) ? true : false;
+}
+
 
 int *readProgam(const char* filename, int* progSize){
     FILE* file = fopen(filename, "r");
@@ -73,8 +101,8 @@ int *readProgam(const char* filename, int* progSize){
     char line[256];
     while(fgets(line, sizeof(line), file)){
         // Isolating the instructions
-        char* token = strtok(line, " /t/n");
-        token = removeChars(token, ";\n");
+        char* token = strtok(line, " \t\n");
+        token = removeChars(token, " ;\n");
         if(!token || token[0] == ';') continue;
 
         // Gettingg the opcode
@@ -90,24 +118,77 @@ int *readProgam(const char* filename, int* progSize){
         prog[(*progSize)++] = opcode;
     
         // Handling instructions with operands
-        if(opcode == PSH || opcode == SET || opcode == ADD){
-            token = strtok(NULL, " /t/n");
-            token = removeChars(token, ";\n");
+        if(opcode == PSH || opcode == DIV || opcode == MUL || opcode == LWD){
+            token = strtok(NULL, " \t\n");
+            token = removeChars(token, " ;\n");
             if(!token){
                 fprintf(stderr, "Error: Missing operands for instruction %s\n", instMap[opcode].name);
                 free(prog);
                 fclose(file);
                 return NULL;
             }
+
+            int operand;
+            if(opcode == PSH || opcode == DIV || opcode == MUL){
+                if(checkStringToNum(token)){
+                    operand = atoi(token);
+                } else {
+                        fprintf(stderr, "Error: Invalid form of operand, check the list of instructions !\n");
+                        free(prog);
+                        fclose(file);
+                        return NULL;
+                }
+            } else{
+                operand = getRegistercode(token);
+            } 
+            prog[(*progSize)++] = operand;
+
+        } else if(opcode == SET){
+            token = strtok(NULL, " \t\n");
+            token = removeChars(token, " ;\n");
+            if(!token){
+                fprintf(stderr, "Error: Missing operands for instruction %s\n", instMap[opcode].name);
+                free(prog);
+                fclose(file);
+                return NULL;
+            }
+            
+            int reg = -1;
+            if (strcmp(token, "A") == 0) reg = A;
+            else if (strcmp(token, "B") == 0) reg = B;
+            else if (strcmp(token, "C") == 0) reg = C;
+            else if (strcmp(token, "D") == 0) reg = D;
+            else if (strcmp(token, "E") == 0) reg = E;
+            else if (strcmp(token, "F") == 0) reg = F;
+            else {
+                fprintf(stderr, "Error: Invalid register %s.\n", token);
+                free(prog);
+                fclose(file);
+                return NULL;
+            }
+
+            // Second operand: Value
+            token = strtok(NULL, " \t\n");
+            if (!token) {
+                fprintf(stderr, "Error: Missing value for SET.\n");
+                free(prog);
+                fclose(file);
+                return NULL;
+            }
+
+            int value;
             if(checkStringToNum(token)){
-                int operand = atoi(token); 
-                prog[(*progSize)++] = operand;
+                value = atoi(token);
             } else {
                     fprintf(stderr, "Error: Invalid form of operand, check the list of instructions !\n");
                     free(prog);
                     fclose(file);
                     return NULL;
             }
+
+            // Add SET instruction and operands to program
+            prog[(*progSize)++] = reg;
+            prog[(*progSize)++] = value;
         }
     }
 

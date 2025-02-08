@@ -4,6 +4,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// TODO::Implement debugging helpers 
+void printProg(int* prog, int progSize){
+	printf("Program is: \t");
+	for(int i=0; i < progSize; ++i){
+		printf("%d,", prog[i]);
+	}
+	printf("\n");
+}
+
 int main(int argc, char** argv){
 
 	
@@ -13,7 +22,8 @@ int main(int argc, char** argv){
 		return 1;
 	}
 	if(verifyFile(argv[1]) == false){
-		fprintf(stderr, "Invalid file extension !\n");
+		fprintf(stderr, "Invalid file extension, name you file following this format: [fileName.asi]\n");
+		return 1;
 	}	
 	
 	const char* fileName = argv[1]; 
@@ -27,6 +37,8 @@ int main(int argc, char** argv){
 	registers[IP] = 0; 	// Instruction Pointer
 	registers[SP] = -1; 	// Stack Pointer
 	
+	//printProg(prog, progSize);
+
 	/* Main Loop */
 	while(loop){
 		int inst = fetch(prog);

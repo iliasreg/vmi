@@ -10,8 +10,12 @@
 typedef enum{
 	PSH,
 	ADD,
+	SUB,
+	MUL,
+	DIV,
 	POP,
 	SET,
+	LWD,
 	HLT
 } InstructionSet;
 
