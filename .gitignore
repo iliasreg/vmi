@@ -5,6 +5,7 @@
 *.asi
 
 # Ignore build 
+vmi
 
 # Ignore IDE-specific files
 .vscode/
