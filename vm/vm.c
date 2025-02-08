@@ -1,5 +1,5 @@
 #include "vm.h"
-#include "file_lexer.h"
+#include "../readers/file_lexer.h"
 #include <stdio.h>
 
 bool loop = true;

@@ -1,5 +1,5 @@
 #include "file_lexer.h"
-#include "vm.h"
+#include "../vm/vm.h"
 
 #include <stdio.h>
 #include <stdlib.h>

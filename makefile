@@ -1,7 +1,7 @@
-SRC_FILES = main.c vm.c file_lexer.c
+SRC_FILES = src/main.c vm/vm.c readers/file_lexer.c
 FLAGS = -Wall -Wextra -g -std=c11
 CC = clang
-TARGET = vm
+TARGET = vmi
 
 all:
 	$(CC) $(SRC_FILES) $(FLAGS) -o $(TARGET)
