@@ -1,4 +1,10 @@
-PSH 4;
-PSH 100;
+SET A 5;
+SET C 100;
+LWD A;
+LWD C;
+ADD;
+POP;
+PSH 5 ;
+DIV 5;
 POP;
 HLT;
