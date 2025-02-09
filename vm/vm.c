@@ -1,15 +1,21 @@
 #include "vm.h"
 #include "../readers/file_lexer.h"
+#include "../helpers/helpers.h"
+
 #include <stdio.h>
 
+/* Initializations */
 bool loop = true;
-int stack[STACK_SIZE];
+int stack[STACK_SIZE] = {0};
 int registers[NUM_OF_REGISTERS];
+int memory[MEMORY_SIZE] = {0};
 
+// Fetching instructions from the program array 
 int fetch(int* prog){
 	return prog[registers[IP]];
 }
 
+// Evaluating instructions
 void eval(int* prog, int inst){
 	switch(inst){
 		case HLT: {
@@ -108,6 +114,23 @@ void eval(int* prog, int inst){
 			int x = prog[++registers[IP]];
 			registers[reg] = x;
 			printf("--Register %d set to: %d\n", reg, x);
+			break;
+		}
+		case STO: {
+			int address = prog[++registers[IP]];
+			if(registers[SP] < 0){
+				fprintf(stderr, "Error: Stack Underflow !\n");
+				loop = false;
+				break;
+			}
+			if(address < 0 || address > MEMORY_SIZE){
+				fprintf(stderr, "Invalid memory location, check the range of addresses allowed !\n");
+				loop = false;
+				break;
+			}
+			int valueToStore = stack[registers[SP]--];
+			memory[address] = valueToStore;
+			printf("--Stored value %d to memory adddress 0x%04X\n", valueToStore, address);
 			break;
 		}
 		default: {

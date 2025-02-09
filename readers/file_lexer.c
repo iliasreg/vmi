@@ -16,6 +16,7 @@ InstructionMap instMap[]= {
     {"SET", SET},
     {"HLT", HLT},
     {"LWD", LWD},
+    {"STO", STO},
     {"POP", POP},
     {NULL, 0}
 };
@@ -118,7 +119,7 @@ int *readProgam(const char* filename, int* progSize){
         prog[(*progSize)++] = opcode;
     
         // Handling instructions with operands
-        if(opcode == PSH || opcode == DIV || opcode == MUL || opcode == LWD){
+        if(opcode == PSH || opcode == DIV || opcode == MUL || opcode == LWD || opcode == STO){
             token = strtok(NULL, " \t\n");
             token = removeChars(token, " ;\n");
             if(!token){
@@ -129,7 +130,7 @@ int *readProgam(const char* filename, int* progSize){
             }
 
             int operand;
-            if(opcode == PSH || opcode == DIV || opcode == MUL){
+            if(opcode == PSH || opcode == DIV || opcode == MUL || opcode == STO){
                 if(checkStringToNum(token)){
                     operand = atoi(token);
                 } else {

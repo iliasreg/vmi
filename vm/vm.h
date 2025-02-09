@@ -3,11 +3,20 @@
 
 #include <stdbool.h>
 
+// Stack
 #define STACK_SIZE 256
+
+// Program Size
+// TODO::Could implement dynamic program reading
 #define MAX_PROGRAM_SIZE 256
+
+// Memory
+#define MEMORY_SIZE 256  // 8 bits
+
 
 /* Instruction Set */
 typedef enum{
+	HLT,
 	PSH,
 	ADD,
 	SUB,
@@ -16,7 +25,7 @@ typedef enum{
 	POP,
 	SET,
 	LWD,
-	HLT
+	STO
 } InstructionSet;
 
 /* Registers */
@@ -28,8 +37,10 @@ typedef enum{
 
 /* GLOBAL VARIABLES */
 extern bool loop;
-extern int stack[];
+
+extern int stack[STACK_SIZE];
 extern int registers[];
+extern int memory[MEMORY_SIZE];
 
 /* Functions */
 int fetch(int* prog);

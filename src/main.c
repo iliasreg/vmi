@@ -1,5 +1,6 @@
 #include "../vm/vm.h"
 #include "../readers/file_lexer.h"
+#include "../helpers/helpers.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,6 +38,7 @@ int main(int argc, char** argv){
 	registers[IP] = 0; 	// Instruction Pointer
 	registers[SP] = -1; 	// Stack Pointer
 	
+	// Prints the program
 	//printProg(prog, progSize);
 
 	/* Main Loop */
@@ -45,6 +47,9 @@ int main(int argc, char** argv){
 		eval(prog, inst);
 		registers[IP]++; // Increments the IP to get the next instruction
 	}
+
+	// Prints memory contens
+	printMemory(memory);
 
 	return 0;
 }

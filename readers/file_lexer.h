@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 
+// Maybe would add an integer to keep track of operands required by each instruction
 typedef struct {
     const char* name;
     int opcode; 
