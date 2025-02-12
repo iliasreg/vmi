@@ -3,6 +3,7 @@
 #include "../helpers/helpers.h"
 
 #include <stdio.h>
+#include <stdint.h>
 
 /* Initializations */
 bool loop = true;

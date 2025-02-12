@@ -2,16 +2,17 @@
 #define VM_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 // Stack
-#define STACK_SIZE 256
+#define STACK_SIZE (1 << 8) // 8 bits = 256
 
 // Program Size
 // TODO::Could implement dynamic program reading
 #define MAX_PROGRAM_SIZE 256
 
 // Memory
-#define MEMORY_SIZE 256  // 8 bits
+#define MEMORY_SIZE (1 << 8)  // 8 bits = 256
 
 
 /* Instruction Set */
@@ -38,8 +39,8 @@ typedef enum{
 /* GLOBAL VARIABLES */
 extern bool loop;
 
-extern int stack[STACK_SIZE];
 extern int registers[];
+extern int stack[STACK_SIZE];
 extern int memory[MEMORY_SIZE];
 
 /* Functions */

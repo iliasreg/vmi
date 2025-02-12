@@ -19,3 +19,20 @@ void printMemory(int memory[]) {
         }
     }
 }
+
+// Prints stack content
+void printStack(int stack[]) {
+    printf("Stack: [ ");
+    for (int i = 0; i < STACK_SIZE; i++) {
+        if (stack[i] != 0) { // Print only non-zero values
+            printf("%d ", stack[i]);
+        }
+    }
+    printf("]\n");
+}
+
+// Prints register X content
+void printRegister(int x) {
+    int valueInRegister = registers[x];
+    printf("Register %d: %d", x, valueInRegister);
+}

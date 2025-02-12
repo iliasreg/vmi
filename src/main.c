@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// TODO::Implement debugging helpers 
 void printProg(int* prog, int progSize){
 	printf("Program is: \t");
 	for(int i=0; i < progSize; ++i){
@@ -50,6 +49,7 @@ int main(int argc, char** argv){
 
 	// Prints memory contens
 	printMemory(memory);
+	printStack(stack);
 
 	return 0;
 }

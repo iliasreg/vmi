@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #define FILE_EXTENSION ".asi"
 
@@ -49,8 +50,8 @@ bool verifyFile(char* file){
     return false;
 }
 
-int getOpcode(const char* name){
-    for(int i = 0; instMap[i].name; i++){
+uint16_t getOpcode(const char* name){
+    for(uint16_t i = 0; instMap[i].name; i++){
         if(strcmp(name, instMap[i].name) == 0){
             return instMap[i].opcode;
         }
@@ -58,8 +59,17 @@ int getOpcode(const char* name){
     return -1;
 }
 
-int getRegistercode(const char* name){
-    for(int i = 0; registerMap[i].name; i++){
+char* getRegisterName(int opcode){
+    for(uint16_t i = 0; instMap[i].opcode; i++){
+        if(opcode == instMap[i].opcode){
+            return instMap[i].name;
+        }
+    }
+    return "";
+}
+
+uint16_t getRegistercode(const char* name){
+    for(uint16_t i = 0; registerMap[i].name; i++){
         if(strcmp(name, registerMap[i].name) == 0){
             return registerMap[i].opcode;
         }
