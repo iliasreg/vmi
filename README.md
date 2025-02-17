@@ -1,12 +1,13 @@
-# Virtual Machine in C
+# Vmi - A Virtual Machine in C
 
 A simple stack-based virtual machine implemented in C. This project is designed to help you understand how virtual machines work at a low level, including instruction fetching, decoding, and execution.
 
 ## Features
 - **Stack-Based Design**: Uses a stack for arithmetic and data manipulation.
-- **Basic Instruction Set**: Supports instructions like `PSH`, `POP`, `ADD`, `SET`, and `HLT`.
+- **Basic Instruction Set**: Supports instructions like `PSH`, `POP`, `ADD`, `SUB`, `MUL`, `DIV`, `SET`, `LWD`, `STO`, and `HLT`.
 - **File-Based Programs**: Reads programs from `.asi` files (Assembly Instruction).
 - **Registers**: Includes general-purpose registers (`A`, `B`, `C`, `D`, `E`, `F`) and special-purpose registers (`IP`, `SP`).
+- **Memory System**: Supports storing and loading values from memory addresses.
 
 ## Instruction Set
 | Instruction | Description                          | Example          |
@@ -14,7 +15,12 @@ A simple stack-based virtual machine implemented in C. This project is designed 
 | `PSH <val>` | Push a value onto the stack          | `PSH 10`         |
 | `POP`       | Pop the top value from the stack     | `POP`            |
 | `ADD`       | Add the top two stack values         | `ADD`            |
+| `SUB`       | Subtract the top two stack values    | `SUB`            |
+| `MUL <val>` | Multiply the top stack value by `<val>` | `MUL 2`       |
+| `DIV <val>` | Divide the top stack value by `<val>`  | `DIV 2`       |
 | `SET <reg>, <val>` | Set a register to a value      | `SET A, 10`      |
+| `LWD <reg>` | Load value from a register onto the stack | `LWD A`    |
+| `STO <addr>`| Store the top stack value at memory address `<addr>` | `STO 0` |
 | `HLT`       | Halt the program                     | `HLT`            |
 
 ---
@@ -71,21 +77,35 @@ Popped Value is: 15
 
 ## Project Structure
 ```
-vm/
-├── vm.h          // Main header file (public declarations)
-├── vm.c          // Core VM logic (stack, registers, instructions)
-├── file_lexer.h // Header for file reading functionality
-├── file_lexer.c // Implementation of file reading
-├── main.c        // Entry point (minimal code)
-└── Makefile      // Build system
+vmi/
+├── vscode/            // VS Code configuration files
+├── helpers/           // Helper functions and utilities
+│   ├── helpers.c      // Implementation of helper functions
+│   └── helpers.h      // Header for helper functions
+├── readers/           // File reading and lexing
+│   ├── file_lexer.c   // Implementation of file lexer
+│   └── file_lexer.h   // Header for file lexer
+├── src/               // Source code
+│   ├── main.c         // Entry point (minimal code)
+│   └── vm/            // Virtual machine core logic
+│       ├── vm.c       // Implementation of VM instructions
+│       └── vm.h       // Header for VM logic
+├── .gitignore         // Git ignore file
+├── code.asi           // Example assembly program
+├── Makefile           // Build system
+└── README.md          // Project documentation
 ```
 
 ---
 
-## Future Improvements
-- Add more instructions (e.g., `SUB`, `MUL`, `DIV`, `JMP`, `JEQ`).
-- Improve error handling (stack overflow/underflow, invalid instructions).
-- Add debugging tools (step-by-step execution, register inspection).
+
+### **Key Updates**
+1. **Instruction Set**: Added `STO`, `LWD`, `MUL`, `DIV`, and `SUB` instructions.
+2. **Example Program**: Updated to demonstrate `STO` and `LWD`.
+3. **Project Structure**: Added `file_lexer.h` and `file_lexer.c` to reflect the file reading system.
+4. **Future Improvements**: Added plans for control flow and debugging tools.
+
+Let me know if you’d like further tweaks or additions! 🚀
 
 ---
 
@@ -103,8 +123,3 @@ Contributions are welcome! If you'd like to contribute:
 This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
 
 ---
-
-## Acknowledgments
-- Inspired by [Felix Angell's Virtual Machine in C](https://blog.felixangell.com/virtual-machine-in-c/).
-- Special thanks to the Hacker News community for feedback and ideas.
-```
