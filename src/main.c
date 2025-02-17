@@ -1,10 +1,10 @@
 #include "../vm/vm.h"
 #include "../readers/file_lexer.h"
+#include "../helpers/helpers.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-// TODO::Implement debugging helpers 
 void printProg(int* prog, int progSize){
 	printf("Program is: \t");
 	for(int i=0; i < progSize; ++i){
@@ -37,14 +37,18 @@ int main(int argc, char** argv){
 	registers[IP] = 0; 	// Instruction Pointer
 	registers[SP] = -1; 	// Stack Pointer
 	
-	//printProg(prog, progSize);
-
+	
 	/* Main Loop */
 	while(loop){
 		int inst = fetch(prog);
 		eval(prog, inst);
 		registers[IP]++; // Increments the IP to get the next instruction
 	}
+	
+	/* Prints memory contens */
+	//printProg(prog, progSize);
+	//printMemory(memory);
+	//printStack(stack);
 
 	return 0;
 }
