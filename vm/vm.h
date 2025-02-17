@@ -17,16 +17,16 @@
 
 /* Instruction Set */
 typedef enum{
-	HLT,
 	PSH,
 	ADD,
 	SUB,
 	MUL,
 	DIV,
-	POP,
 	SET,
+	HLT,
 	LWD,
-	STO
+	STO,
+	POP
 } InstructionSet;
 
 /* Registers */

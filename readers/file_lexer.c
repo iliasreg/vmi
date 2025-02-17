@@ -9,20 +9,20 @@
 #define FILE_EXTENSION ".asi"
 
 InstructionMap instMap[]= {
-    {"PSH", PSH},
-    {"ADD", ADD},
-    {"SUB", SUB},
-    {"MUL", MUL},
-    {"DIV", DIV},
-    {"SET", SET},
-    {"HLT", HLT},
-    {"LWD", LWD},
-    {"STO", STO},
-    {"POP", POP},
-    {NULL, 0}
+    {"PSH", PSH, 1},
+    {"ADD", ADD, 0},
+    {"SUB", SUB, 0},
+    {"MUL", MUL, 1},
+    {"DIV", DIV, 1},
+    {"SET", SET, 2},
+    {"HLT", HLT, 0},
+    {"LWD", LWD, 1},
+    {"STO", STO, 1},
+    {"POP", POP, 0},
+    {NULL, 0, 0}
 };
 
-InstructionMap registerMap[]= {
+RegisterMap registerMap[]= {
     {"A", A},
     {"B", B},
     {"C", C},
@@ -50,17 +50,26 @@ bool verifyFile(char* file){
     return false;
 }
 
-uint16_t getOpcode(const char* name){
-    for(uint16_t i = 0; instMap[i].name; i++){
+uint8_t getOpcode(const char* name){
+    for(uint8_t i = 0; instMap[i].name; i++){
         if(strcmp(name, instMap[i].name) == 0){
             return instMap[i].opcode;
         }
     }
-    return -1;
+    return 255;
 }
 
-char* getRegisterName(int opcode){
-    for(uint16_t i = 0; instMap[i].opcode; i++){
+const char* getRegisterName(int registerCode){
+    for(uint8_t i = 0; registerMap[i].name; i++){
+        if(registerCode == registerMap[i].registerCode){
+            return registerMap[i].name;
+        }
+    }
+    return "";
+}
+
+const char* getInstructionName(int opcode){
+    for(uint8_t i = 0; instMap[i].name; i++){
         if(opcode == instMap[i].opcode){
             return instMap[i].name;
         }
@@ -68,27 +77,34 @@ char* getRegisterName(int opcode){
     return "";
 }
 
-uint16_t getRegistercode(const char* name){
-    for(uint16_t i = 0; registerMap[i].name; i++){
+uint8_t getRegistercode(const char* name){
+    for(uint8_t i = 0; registerMap[i].name; i++){
         if(strcmp(name, registerMap[i].name) == 0){
-            return registerMap[i].opcode;
+            return registerMap[i].registerCode;
         }
     }
-    return -1;
+    return 255; 
+}
+
+uint8_t getNumOperands(uint8_t opcode){
+    for(uint8_t i = 0; instMap[i].name; i++){
+        if(opcode == instMap[i].opcode){
+            return instMap[i].numOperands;
+        }
+    }
+    return 0;
 }
 
 char* removeChars(char *str, const char *chars_to_remove) {
-    if (!str || !chars_to_remove) return str; // Check for NULL pointers
-    
+    if (!str || !chars_to_remove) return str;
     int i = 0, j = 0;
     while (str[i]) {
-        // Check if the current character is in the list of characters to remove
         if (!strchr(chars_to_remove, str[i])) {
-            str[j++] = str[i]; // Keep the character
+            str[j++] = str[i];
         }
         i++;
     }
-    str[j] = '\0'; // Null-terminate the modified string
+    str[j] = '\0';
     return str;
 }
 
@@ -96,73 +112,35 @@ bool checkStringToNum(char* str){
     return (strcmp(str, "0") == 0 || atoi(str) != 0) ? true : false;
 }
 
-
-int *readProgam(const char* filename, int* progSize){
-    FILE* file = fopen(filename, "r");
-
-    //TODO: Add check for file extension .asi 
-    if(!file){
-        fprintf(stderr, "Error: Could not open the file %s\n", filename);
-        return NULL;
+bool verifyToken(char* token, uint8_t opcode, int* prog, FILE* file){
+    if(!token){
+        fprintf(stderr, "Error: Missing operands for instruction %s\n", getInstructionName(opcode));
+        free(prog);
+        fclose(file);
+        return false;
     }
+    return true;
+}
 
-    int* prog = malloc(MAX_PROGRAM_SIZE * sizeof(int));
-    *progSize = 0;
-
-    char line[256];
-    while(fgets(line, sizeof(line), file)){
-        // Isolating the instructions
-        char* token = strtok(line, " \t\n");
-        token = removeChars(token, " ;\n");
-        if(!token || token[0] == ';') continue;
-
-        // Gettingg the opcode
-        int opcode = getOpcode(token);
-        if(opcode == -1){
-            fprintf(stderr, "Error: Invalid instruction, read the list of instructions ! \n");
-            free(prog);
-            fclose(file);
-            return NULL;
+uint8_t getOperand(char* token, uint8_t opcode, int* prog, FILE* file){
+    if(opcode == PSH || opcode == DIV || opcode == MUL || opcode == STO){
+        if(checkStringToNum(token)){
+            return atoi(token);
+        } else {
+                fprintf(stderr, "Error: Invalid form of operand, check the list of instructions !\n");
+                free(prog);
+                fclose(file);
+                return 0;
         }
+    } else{
+        return getRegistercode(token);
+    } 
+}
 
-        // Adding the instruction to the array if it's validated
-        prog[(*progSize)++] = opcode;
-    
-        // Handling instructions with operands
-        if(opcode == PSH || opcode == DIV || opcode == MUL || opcode == LWD || opcode == STO){
-            token = strtok(NULL, " \t\n");
-            token = removeChars(token, " ;\n");
-            if(!token){
-                fprintf(stderr, "Error: Missing operands for instruction %s\n", instMap[opcode].name);
-                free(prog);
-                fclose(file);
-                return NULL;
-            }
-
-            int operand;
-            if(opcode == PSH || opcode == DIV || opcode == MUL || opcode == STO){
-                if(checkStringToNum(token)){
-                    operand = atoi(token);
-                } else {
-                        fprintf(stderr, "Error: Invalid form of operand, check the list of instructions !\n");
-                        free(prog);
-                        fclose(file);
-                        return NULL;
-                }
-            } else{
-                operand = getRegistercode(token);
-            } 
-            prog[(*progSize)++] = operand;
-
-        } else if(opcode == SET){
-            token = strtok(NULL, " \t\n");
-            token = removeChars(token, " ;\n");
-            if(!token){
-                fprintf(stderr, "Error: Missing operands for instruction %s\n", instMap[opcode].name);
-                free(prog);
-                fclose(file);
-                return NULL;
-            }
+bool handleSet(char* token, uint8_t opcode, int* prog, FILE* file, int* progSize){
+    if(!verifyToken(token, opcode, prog, file)){
+        return false;
+    }
             
             int reg = -1;
             if (strcmp(token, "A") == 0) reg = A;
@@ -175,7 +153,7 @@ int *readProgam(const char* filename, int* progSize){
                 fprintf(stderr, "Error: Invalid register %s.\n", token);
                 free(prog);
                 fclose(file);
-                return NULL;
+                return false;
             }
 
             // Second operand: Value
@@ -184,7 +162,7 @@ int *readProgam(const char* filename, int* progSize){
                 fprintf(stderr, "Error: Missing value for SET.\n");
                 free(prog);
                 fclose(file);
-                return NULL;
+                return false;
             }
 
             int value;
@@ -194,12 +172,63 @@ int *readProgam(const char* filename, int* progSize){
                     fprintf(stderr, "Error: Invalid form of operand, check the list of instructions !\n");
                     free(prog);
                     fclose(file);
-                    return NULL;
+                    return false;
             }
 
             // Add SET instruction and operands to program
             prog[(*progSize)++] = reg;
             prog[(*progSize)++] = value;
+            return true;
+        
+}
+
+int *readProgam(const char* filename, int* progSize){
+    FILE* file = fopen(filename, "r");
+
+    if(!file){
+        fprintf(stderr, "Error: Could not open the file %s\n", filename);
+        return NULL;
+    }
+
+    int* prog = calloc(MAX_PROGRAM_SIZE, sizeof(int));
+    *progSize = 0;
+
+    char line[256];
+    while(fgets(line, sizeof(line), file)){
+        // Isolating the instructions
+        char* token = strtok(line, " \t\n");
+        token = removeChars(token, " ;\n");
+        if(!token || token[0] == ';') continue;
+
+        // Getting the opcode
+        uint8_t opcode = getOpcode(token);
+        if(opcode == 255){
+            fprintf(stderr, "Error: Invalid instruction, read the list of instructions ! \n");
+            free(prog);
+            fclose(file);
+            return NULL;
+        }
+
+        // Adding the instruction to the array if it's validated
+        prog[(*progSize)++] = opcode;
+    
+        // Handling instructions with one operand
+        if(getNumOperands(opcode) == 1){
+            token = strtok(NULL, " \t\n");
+            token = removeChars(token, " ;\n");
+            if(!verifyToken(token, opcode, prog, file)){
+                return NULL;
+            }
+
+        prog[(*progSize)++] = getOperand(token, opcode, prog,file);
+
+        // Handling SET operation
+        } else if(opcode == SET){
+            token = strtok(NULL, " \t\n");
+            token = removeChars(token, " ;\n");
+            if(!handleSet(token, opcode, prog, file, progSize)){
+                return NULL;
+            }
         }
     }
 

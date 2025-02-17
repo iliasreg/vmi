@@ -37,19 +37,18 @@ int main(int argc, char** argv){
 	registers[IP] = 0; 	// Instruction Pointer
 	registers[SP] = -1; 	// Stack Pointer
 	
-	// Prints the program
-	//printProg(prog, progSize);
-
+	
 	/* Main Loop */
 	while(loop){
 		int inst = fetch(prog);
 		eval(prog, inst);
 		registers[IP]++; // Increments the IP to get the next instruction
 	}
-
-	// Prints memory contens
-	printMemory(memory);
-	printStack(stack);
+	
+	/* Prints memory contens */
+	//printProg(prog, progSize);
+	//printMemory(memory);
+	//printStack(stack);
 
 	return 0;
 }
